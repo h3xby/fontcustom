@@ -53,7 +53,10 @@ def removeSwitchFromSvg( file ):
     tmpsvgfile = tempfile.NamedTemporaryFile(suffix=".svg", delete=False)
     svgtext = svgtext.replace('<switch>', '')
     svgtext = svgtext.replace('</switch>', '')
-    tmpsvgfile.file.write(svgtext)
+    if sys.version_info >= (3,0):
+        tmpsvgfile.file.write(bytes(svgtext, 'UTF-8'))
+    else:
+        tmpsvgfile.file.write(svgtext)
     tmpsvgfile.file.close()
 
     return tmpsvgfile.name
@@ -83,8 +86,12 @@ def createGlyph( name, source, code ):
 glyph = font.createChar(32)
 glyph.width = 200
 
-for glyph, data in manifest['glyphs'].iteritems():
-    name = createGlyph(glyph, data['source'], data['codepoint'])
+if sys.version_info >= (3,0):
+    for glyph, data in manifest['glyphs'].items():
+        name = createGlyph(glyph, data['source'], data['codepoint'])
+else:
+    for glyph, data in manifest['glyphs'].iteritems():
+        name = createGlyph(glyph, data['source'], data['codepoint'])
 
 #
 # Generate Files
